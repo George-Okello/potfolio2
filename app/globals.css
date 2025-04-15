@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --primary-color: #010701;
+  --secondary-color: #2e382e;
+  --background-color: #1a251a;
+  --accent-color: #f1f0ee;
+  --text-color: #ffffff;
+}
+
+body {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.button {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
