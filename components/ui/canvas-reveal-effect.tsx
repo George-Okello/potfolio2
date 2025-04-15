@@ -191,6 +191,12 @@ interface ShaderMaterialProps {
   uniforms: Uniforms;
 }
 
+// Define a proper THREE IUniform interface since THREE.ShaderMaterial expects this shape
+interface IUniform<T> {
+  value: T;
+  [key: string]: unknown; // Changed from any to unknown for better type safety
+}
+
 const ShaderMaterial: React.FC<ShaderMaterialProps> = ({
   source,
   uniforms,
@@ -215,36 +221,33 @@ const ShaderMaterial: React.FC<ShaderMaterialProps> = ({
   });
 
   const getUniforms = useCallback(() => {
-    const preparedUniforms: Record<string, unknown> = {};
+    const preparedUniforms: { [uniform: string]: IUniform<unknown> } = {}; // Changed from any to unknown
 
     for (const uniformName in uniforms) {
       const uniform = uniforms[uniformName];
 
       switch (uniform.type) {
         case "uniform1f":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1f" };
+          preparedUniforms[uniformName] = { value: uniform.value };
           break;
         case "uniform3f":
           preparedUniforms[uniformName] = {
             value: new THREE.Vector3().fromArray(uniform.value as number[]),
-            type: "3f",
           };
           break;
         case "uniform1fv":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1fv" };
+          preparedUniforms[uniformName] = { value: uniform.value };
           break;
         case "uniform3fv":
           preparedUniforms[uniformName] = {
             value: (uniform.value as number[][]).map((v: number[]) =>
               new THREE.Vector3().fromArray(v)
             ),
-            type: "3fv",
           };
           break;
         case "uniform2f":
           preparedUniforms[uniformName] = {
             value: new THREE.Vector2().fromArray(uniform.value as number[]),
-            type: "2f",
           };
           break;
         default:
@@ -253,7 +256,7 @@ const ShaderMaterial: React.FC<ShaderMaterialProps> = ({
       }
     }
 
-    preparedUniforms["u_time"] = { value: 0, type: "1f" };
+    preparedUniforms["u_time"] = { value: 0 };
     preparedUniforms["u_resolution"] = {
       value: new THREE.Vector2(size.width * 2, size.height * 2),
     }; // Initialize u_resolution
